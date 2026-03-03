@@ -9,7 +9,10 @@ class Inventory():
         self.items.append(new_item)
         
     def remove_item(self, name):
-        self.items = [i for i in self.items if i.name != name]
+        #self.items = [i for i in self.items if i.name != name]    changing from hard delete to soft delete for convenience.
+        item = self.get_item(name)
+        if item:
+            item.quantity = 0
         
     def get_item(self, name):
         for item in self.items:
