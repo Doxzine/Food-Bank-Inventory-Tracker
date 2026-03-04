@@ -1,3 +1,5 @@
+## Superseded by database.py - kept for reference
+
 from .item import Item
 
 class Inventory():
