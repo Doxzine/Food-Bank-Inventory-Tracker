@@ -4,25 +4,49 @@ from database import Database
 
 db = Database()
 
-user = User("admin", "password123", "admin") #authorization & authentication change role to admin, viewer, scanner, or stocker for differernt permissions
+
+db.admin() #Creates a default admin login (admin, admin)
+
+
+while True:
+    username = input("Username: ")
+    password = input("Password: ")
+    row = db.get_user(username)
+    if row and row[1] == password:
+        user = User(row[0], row[1], row[2])
+        print(f"Welcome {user.username}")
+        break
+    else:
+        print("Invalid username or password, try again.\n")
+
+
 
 while True:
     print("\n1. List items")
     print("2. Add item")
     print("3. Remove item")
     print("4. Find item")
-    print("5. Quit")
+    print("5. Manage Users")
+    print("6. Quit")
 
     
-    choice = input("What do you want to do? ")
+    choice = input("What do you want to do?\n")
     
     if choice == "1":
         db.list_all()
     elif choice == "2":
         if user.can_do("scan_add"):
-            name = input("Item name: ")
-            quantity = int(input("Quantity: "))
-            type = input("Type: ")
+            try:
+                name = input("Item name: ")
+                quantity = int(input("Quantity: "))
+                if quantity < 0:
+                    print("Quantity can't be negative")
+                    continue
+                type = input("Type: ")
+            except ValueError:
+                print("Please input numbers")
+                continue
+                
             db.add_item(name, quantity, type)
         else:
             print("You don't have permission to do that")
@@ -35,7 +59,48 @@ while True:
         else:
             print("You don't have permission")
     elif choice == "4":
-        found_item = input("\nWhat item do you want to find? ")
-        result = db.find_item(found_item)
+        name = input("\nWhat item do you want to find? ")
+        result = db.find_item(name)
+        if not result:
+            print(f"\n{name} not found")
+        else: 
+            name, quantity, type = result
+            print(f"\n{name} - {quantity} in stock - {type}")
+            
     elif choice == "5":
+        if user.can_do("manage_users"):
+            print("\n1. Add user")
+            print("2. Remove user")
+            print("3. List users")
+            action = input("Choose: ")
+            if action == "1":
+                new_user = input("Username: ")
+                new_pass = input("Password: ")
+                new_role = input("Role: ")
+                db.add_user(new_user, new_pass, new_role)
+            elif action == "2":
+                remove = input("Username to remove: ")
+                if remove.lower() == user.username:
+                    print("Can't remove yourself")
+                elif db.get_user(remove):
+                    confirm = input(f"Are you sure you want to remove {remove}? (1 = Yes, 2 = No): ")
+                    if confirm == "1":
+                        db.remove_user(remove)
+                        print(f"{remove} removed")
+                    else:
+                        print("Cancelled")
+                else:
+                    print(f"{remove} not found")
+            elif action == "3":
+                users = db.list_users()
+                if not users:
+                    print("No users found")
+                else:
+                    for u in users:
+                        print(f"{u[0]} - {u[1]}")
+        else:
+            print("You don't have permission")
+    
+    elif choice == "6":
+        db.close()
         break

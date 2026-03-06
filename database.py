@@ -16,6 +16,14 @@ class Database():
                         type TEXT  
                     )
                     """)
+        self.cur.execute("""
+                    CREATE TABLE IF NOT EXISTS users(
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        username TEXT UNIQUE,
+                        password TEXT,
+                        role TEXT 
+                    )
+                    """)
 
     ##Adding item    
     def add_item(self, name, quantity, type):
@@ -34,12 +42,8 @@ class Database():
 
     def find_item(self, name):
         res = self.cur.execute("SELECT name, quantity, type FROM inventory WHERE name = ?", (name.lower(),))
-        found_item = res.fetchone()
-        if not found_item:
-            print(f"\n{name} not found.")
-        else:
-            name, quantity, type = found_item
-            print(f"\n{name} - {quantity} in stock - {type}")
+        return res.fetchone()
+
         
             
     def update_quantity(self, name, quantity):
@@ -62,3 +66,28 @@ class Database():
     def close(self):
         self.con.close()
         
+        
+    def add_user(self, username, password, role):
+        try:
+            self.cur.execute("INSERT INTO users(username, password, role) VALUES (?, ?, ?)", 
+                            (username.lower(),password, role.lower()))
+            self.con.commit()
+        except sqlite3.IntegrityError:
+            print(f"{username} already exists")
+            
+    def get_user(self, username):
+        res = self.cur.execute("SELECT username, password, role FROM users WHERE username = ?",
+                            (username.lower(),))
+        return res.fetchone()
+    
+    def list_users(self):
+        res = self.cur.execute("SELECT username, role FROM users")
+        return res.fetchall()
+    
+    def remove_user(self, username):
+        self.cur.execute("DELETE FROM users WHERE username = ?", (username.lower(),))
+        self.con.commit()
+    
+    def admin(self):
+        if not self.get_user("admin"):
+            self.add_user("admin", "admin", "admin")
