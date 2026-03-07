@@ -1,6 +1,7 @@
 #from classes.inventory import Inventory -- Superseded
 from classes.user import User
 from database import Database
+import hashlib
 
 db = Database()
 
@@ -12,7 +13,7 @@ while True:
     username = input("Username: ")
     password = input("Password: ")
     row = db.get_user(username)
-    if row and row[1] == password:
+    if row and row[1] == hashlib.sha256(password.encode()).hexdigest():
         user = User(row[0], row[1], row[2])
         print(f"Welcome {user.username}")
         break

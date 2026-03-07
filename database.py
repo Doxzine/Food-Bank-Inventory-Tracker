@@ -1,4 +1,5 @@
 import sqlite3
+import hashlib
 
 class Database():
     def __init__(self):
@@ -70,7 +71,7 @@ class Database():
     def add_user(self, username, password, role):
         try:
             self.cur.execute("INSERT INTO users(username, password, role) VALUES (?, ?, ?)", 
-                            (username.lower(),password, role.lower()))
+                            (username.lower(),hashlib.sha256(password.encode()).hexdigest(), role.lower()))
             self.con.commit()
         except sqlite3.IntegrityError:
             print(f"{username} already exists")
