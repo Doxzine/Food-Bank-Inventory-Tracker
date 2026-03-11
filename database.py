@@ -1,5 +1,6 @@
 import sqlite3
 import hashlib
+import secrets
 
 class Database():
     def __init__(self):
@@ -22,6 +23,7 @@ class Database():
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         username TEXT UNIQUE,
                         password TEXT,
+                        salt TEXT,
                         role TEXT 
                     )
                     """)
@@ -70,14 +72,16 @@ class Database():
         
     def add_user(self, username, password, role):
         try:
-            self.cur.execute("INSERT INTO users(username, password, role) VALUES (?, ?, ?)", 
-                            (username.lower(),hashlib.sha256(password.encode()).hexdigest(), role.lower()))
+            salt = secrets.token_hex(16)
+            hashed = hashlib.sha256((password + salt).encode()).hexdigest()
+            self.cur.execute("INSERT INTO users(username, password, salt, role) VALUES (?, ?, ?, ?)", 
+                            (username.lower(), hashed, salt, role.lower()))
             self.con.commit()
         except sqlite3.IntegrityError:
             print(f"{username} already exists")
             
     def get_user(self, username):
-        res = self.cur.execute("SELECT username, password, role FROM users WHERE username = ?",
+        res = self.cur.execute("SELECT username, password, salt, role FROM users WHERE username = ?",
                             (username.lower(),))
         return res.fetchone()
     

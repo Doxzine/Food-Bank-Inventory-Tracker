@@ -13,8 +13,8 @@ while True:
     username = input("Username: ")
     password = input("Password: ")
     row = db.get_user(username)
-    if row and row[1] == hashlib.sha256(password.encode()).hexdigest():
-        user = User(row[0], row[1], row[2])
+    if row and row[1] == hashlib.sha256((password + row[2]).encode()).hexdigest():
+        user = User(row[0], row[1], row[3])
         print(f"Welcome {user.username}")
         break
     else:
