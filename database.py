@@ -1,6 +1,7 @@
 import sqlite3
 import hashlib
 import secrets
+from datetime import datetime
 
 class Database():
     def __init__(self):
@@ -25,6 +26,15 @@ class Database():
                         password TEXT,
                         salt TEXT,
                         role TEXT 
+                    )
+                    """)
+        self.cur.execute("""
+                    CREATE TABLE IF NOT EXISTS audit(
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        username TEXT,
+                        action TEXT,
+                        details TEXT,
+                        timestamp TEXT 
                     )
                     """)
 
@@ -96,3 +106,20 @@ class Database():
     def admin(self):
         if not self.get_user("admin"):
             self.add_user("admin", "admin", "admin")
+
+
+    def log_action(self, username, action, details):
+        self.cur.execute("INSERT INTO audit(username, action, details, timestamp) VALUES (?, ?, ?, ?)",
+                        (username, action, details, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+        self.con.commit()
+            
+
+    def list_audit_log(self):
+        res = self.cur.execute("SELECT username, action, details, timestamp FROM audit")
+        logs = res.fetchall()
+        if not logs:
+            print("\nNo actions have been taken.")
+        else:
+            for log in logs:
+                print(f"{log[3]} - {log[0]} - {log[1]} - {log[2]}")
+    
