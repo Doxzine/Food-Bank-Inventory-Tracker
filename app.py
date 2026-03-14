@@ -1,9 +1,11 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, session, redirect
+import secrets
 from database import Database
 import hashlib
 
 db = Database()
 app = Flask(__name__)
+app.secret_key = secrets.token_hex(16)
 
 @app.route("/")
 def home():
@@ -76,6 +78,8 @@ def login():
     password = data["password"]
     row = db.get_user(username)
     if row and row[1] == hashlib.sha256((password + row[2]).encode()).hexdigest():
+        session["user"] = username
+        session["role"] = row[3]
         return jsonify({"message": f"Welcome {username}", "role": row[3]})
     else:
         db.log_action("api", "Failed Login", f"{username}")
@@ -83,7 +87,14 @@ def login():
     
 @app.route("/dashboard")
 def dashboard():
+    if "user" not in session:
+        return redirect("/")
     return render_template("dashboard.html")
     
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/")
+
 if __name__ == "__main__":
     app.run(debug=True)

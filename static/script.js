@@ -57,5 +57,5 @@ async function addItem() {
 }
 
 function logout() {
-    window.location.href = "/";
+    window.location.href = "/logout";
 }
