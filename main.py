@@ -35,7 +35,12 @@ while True:
     choice = input("What do you want to do?\n")
     
     if choice == "1":
-        db.list_all()
+        items = db.list_all()
+        if not items:
+            print("\nInventory is empty")
+        else:
+            for item in items:
+                print(item)
     elif choice == "2":
         if user.can_do("scan_add"):
             try:
@@ -56,7 +61,7 @@ while True:
     elif choice == "3":
         if user.can_do("scan_remove"):
             print("You have: \n")
-            db.list_all()
+            items = db.list_all()   
             name = input("Item name: ")
             db.remove_item(name)
             db.log_action(user.username, "removed item", f"{name}")
@@ -107,11 +112,16 @@ while True:
         else:
             print("You don't have permission")
             
-    if choice == "6":
+    elif choice == "6":
         if user.can_do("manage_users"):
-            db.list_audit_log()
+            logs = db.list_audit_log()
+            if not logs:
+                print("\nNo actions have been taken.")
+            else:
+                for log in logs:
+                    print(f"{log[3]} - {log[0]} - {log[1]} - {log[2]}")
         else:
-            print("You can't do that")
+            print("You don't have permission")
     
     elif choice == "7":
         db.close()

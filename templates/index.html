@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Food Bank Inventory</title>
+</head>
+<body>
+    <h1>Food Bank Inventory System</h1>
+    <h3>Have an account?</h3>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <h3>If you need an account please contact an admin.</h3>
+    <a href="mailto:Admin@gmail.com">Ask about account creation!</a>
+
+    <script>
+        async function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const response = await fetch("/login", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({username, password})
+            });
+            const data = await response.json();
+            if (data.message) {
+                alert(data.message);
+            } else {
+                alert(data.error);
+            }
+        }
+    </script>
+</body>
+</html>

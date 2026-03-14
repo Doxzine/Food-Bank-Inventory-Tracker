@@ -5,7 +5,7 @@ from datetime import datetime
 
 class Database():
     def __init__(self):
-        self.con = sqlite3.connect("inventory.db")
+        self.con = sqlite3.connect("inventory.db", check_same_thread=False)
         self.cur = self.con.cursor()
         self.create_table()
         
@@ -67,13 +67,7 @@ class Database():
     
     def list_all(self):
         res = self.cur.execute("SELECT name, quantity, type FROM inventory")
-        items = res.fetchall()
-        if not items:
-            print("\nInventory is empty")
-        else:
-            for item in items:
-                print("")
-                print(item)
+        return res.fetchall()
         
     
     def close(self):
@@ -116,10 +110,5 @@ class Database():
 
     def list_audit_log(self):
         res = self.cur.execute("SELECT username, action, details, timestamp FROM audit")
-        logs = res.fetchall()
-        if not logs:
-            print("\nNo actions have been taken.")
-        else:
-            for log in logs:
-                print(f"{log[3]} - {log[0]} - {log[1]} - {log[2]}")
+        return res.fetchall()
     
