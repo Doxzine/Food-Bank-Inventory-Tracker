@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Inventory Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/script.js" defer></script>
+</head>
+<body>
+    <h1>Welcome!</h1>
+    <h3>What would you like to do?</h3>
+    <button onclick="showSection('inventory')">View Inventory</button>
+    <button onclick="showSection('scanner')">Scan In/Out</button>
+    <button onclick="showSection('admin')">Admin Tools</button>
+    <button onclick="logout()">Logout</button>
+
+    <div id="inventory" style="display:none;">
+        <h2>Inventory</h2>
+        <h3>Add an item</h3>
+                <input type="text" id="itemName" placeholder="Item Name">
+                <input type="number" id="itemQuantity" placeholder="Quantity">
+                <input type="text" id="itemType" placeholder="Type">
+                <button onclick="addItem()">Add Item</button>
+                <table id="inventoryTable">
+                    <tr>    
+                        <th>Name</th>
+                        <th>Quantity</th>
+                        <th>Type</th>
+                    </tr>
+                </table>
+    </div>
+
+    <div id="scanner" style="display:none;">
+        <h2>Scan In/Out</h2>
+    </div>
+
+    <div id="admin" style="display:none;">
+        <h2>Admin Tools</h2>
+    </div>
+
+</body>
+</html>

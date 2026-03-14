@@ -81,5 +81,9 @@ def login():
         db.log_action("api", "Failed Login", f"{username}")
         return jsonify({"error": "Invalid username or password"})
     
+@app.route("/dashboard")
+def dashboard():
+    return render_template("dashboard.html")
+    
 if __name__ == "__main__":
     app.run(debug=True)
