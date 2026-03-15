@@ -26,6 +26,12 @@ An inventory management multi-role system made for food banks to track supply wi
 
 ## How to run 
 
+### Setup
+1) Clone the repo
+2) `python -m venv venv`
+3) `venv\Scripts\activate` (Windows) or `source venv/bin/activate` (Mac/Linux)
+4) `pip install -r requirements.txt`
+
 ### CLI Version
 1) Run the main.py file
 2) Login for default account is admin for username & password
@@ -36,10 +42,9 @@ An inventory management multi-role system made for food banks to track supply wi
    - Admin has full permission
 
 ### Web Version
-1) Install Flask: "pip install flask"
-2) Run app.py
-3) Go to "http://localhost:5000"
-4) Default login is admin admin unless editted in CLI.
+1) Run app.py
+2) Go to "http://localhost:5000"
+3) Default login is admin admin unless editted in CLI.
 
 ### Reset
 - Delete inventory.db file to reset data.
